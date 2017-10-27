@@ -112,7 +112,7 @@ request(get_options, function (error, response, body) {
         toots.push(t);
         for (let j = 0; j < toots.length; j++) {
             post_options.json = {
-                visibility: 'public',
+                visibility: conf.config.visibility,
                 status: toots[j]
             };
             request(post_options, function() {
