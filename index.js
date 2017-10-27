@@ -85,7 +85,7 @@ request(get_options, function (error, response, body) {
             registed: (body.length - new_emojis.length)
         };
         console.log(conf.message.log.count_all + ': ' + count.all);
-        console.log(conf.message.log.count_all + ': ' + count.registed);
+        console.log(conf.message.log.count_registed + ': ' + count.registed);
 
         if (is_init) {
             console.log(conf.message.log.init);
