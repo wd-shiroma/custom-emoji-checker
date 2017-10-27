@@ -7,6 +7,7 @@ let conf = require('config');
 // DB定義
 let db = sqlite.init('./db/custom_emoji.db');
 
+let is_init = false;
 db.serialize(function () {
     let create = new Promise(function (resolve, reject) {
         db.get(
@@ -24,6 +25,7 @@ db.serialize(function () {
     create.then(function (exists) {
         if (!exists) {
             db.run('create table custom_emoji (shortcode text primary key, static_url text, url text)');
+            is_init = true;
         }
     });
 });
@@ -82,15 +84,19 @@ request(get_options, function (error, response, body) {
             all: body.length,
             registed: (body.length - new_emojis.length)
         };
-        console.log("取得カスタム絵文字数" + ':' + count.all);
-        console.log('登録済み絵文字数：' + count.registed);
+        console.log(conf.message.log.count_all + ': ' + count.all);
+        console.log(conf.message.log.count_all + ': ' + count.registed);
 
-        if (new_emojis.length === 0) {
-            console.log('新しい絵文字ないよ。。。。');
+        if (is_init) {
+            console.log(conf.message.log.init);
+            return;
+        }
+        else if (new_emojis.length === 0) {
+            console.log(conf.message.log.not_found);
             return;
         }
 
-        console.log('新しい絵文字来てるよ！');
+        console.log(conf.message.log.found);
         console.log(new_emojis);
 
         let codes = [];
@@ -105,9 +111,9 @@ request(get_options, function (error, response, body) {
                 codes.push(new_emojis[j]);
             }
             t = ((toots.length > 0)
-                    ? ('続き、' + (toots.length + 1) + 'つ目')
-                    : ('新しい絵文字が追加されてる！ (' + count.registed + '→' + count.all + ')'))
-                + "\n:" + codes.join(': :') + ":\n#new_emojis";
+                    ? (conf.message.toot.head_next_before + (toots.length + 1) + conf.message.toot.head_next_after)
+                    : (conf.message.toot.head_new + ' (' + count.registed + '→' + count.all + ')'))
+                + "\n:" + codes.join(': :') + ":\n#" + conf.message.toot.hashtag;
         }
         toots.push(t);
         for (let j = 0; j < toots.length; j++) {
@@ -115,9 +121,12 @@ request(get_options, function (error, response, body) {
                 visibility: conf.config.visibility,
                 status: toots[j]
             };
-            request(post_options, function() {
-                console.log('done');
-            });
+            setTimeout(function(opt_str) {
+                let options = JSON.parse(opt_str);
+                request(options, function() {
+                    console.log('done');
+                });
+            }, j * 1000, JSON.stringify(post_options));
         }
     });
 });
