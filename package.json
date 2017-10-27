@@ -1,0 +1,28 @@
+{
+  "name": "cemoji_checker",
+  "version": "1.0.0",
+  "description": "check new custom emoji for mastodon",
+  "main": "index.js",
+  "scripts": {
+    "strart": "node index.js",
+    "install": "mkdir -p tmp; mkdir -p db",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wd-shiroma/cemoji_checker.git"
+  },
+  "author": "gusk-ma",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wd-shiroma/cemoji_checker/issues"
+  },
+  "homepage": "https://github.com/wd-shiroma/cemoji_checker#readme",
+  "dependencies": {
+    "config": "^1.27.0",
+    "js-yaml": "^3.10.0",
+    "request": "^2.83.0",
+    "require": "^2.4.20",
+    "sqlite3": "^3.1.13"
+  }
+}

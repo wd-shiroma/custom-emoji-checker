@@ -1,0 +1,15 @@
+config:
+  instance: "example.com"
+  access_token: "regist new application from user settings..."
+
+message:
+  log:
+    count_all: "取得カスタム絵文字数"
+    count_registed: "登録済みカスタム絵文字数"
+    not_found: "新しい絵文字ないよ。。。"
+    found: "新しい絵文字来てるよ！"
+  toot:
+    head_new: "新しい絵文字が追加されてる！"
+    head_next_before: "続き、"
+    head_next_after: "つ目"
+    hashtag: "new_emojis"
