@@ -8,6 +8,7 @@ message:
     count_registed: "登録済みカスタム絵文字数"
     not_found: "新しい絵文字ないよ。。。"
     found: "新しい絵文字来てるよ！"
+    init: "今回はDB作成だけ―。終わり―。"
   toot:
     head_new: "新しい絵文字が追加されてる！"
     head_next_before: "続き、"
