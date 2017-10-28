@@ -24,13 +24,13 @@ db.serialize(function () {
 
     create.then(function (exists) {
         if (!exists) {
-            db.run('create table custom_emoji (shortcode text primary key, static_url text, url text)');
+            db.run('create table custom_emoji (shortcode text primary key, static_url text, url text, created_at integer)');
             is_init = true;
         }
     });
 });
 
-if (process.argv[2] === 'shortcode') {
+if (process.argv[2] === 'list') {
     db.serialize(function () {
         db.all(
             'select * from custom_emoji',
@@ -38,8 +38,34 @@ if (process.argv[2] === 'shortcode') {
             function (err, rows) {
             if (err) throw err;
             rows.forEach(function (row) {
-                console.log(row.shortcode);
+                let created_at = new Date(row.created_at)
+                console.log(created_at.toISOString() + ': ' + row.shortcode);
             });
+        });
+    });
+    return;
+}
+else if (process.argv[2] === 'shortcode') {
+    if (!process.argv[3]) {
+        console.log('Invalid shortcode');
+        return;
+    }
+    db.serialize(function () {
+        db.all(
+            'select * from custom_emoji where shortcode = $a',
+            { $a: process.argv[3] },
+            function (err, rows) {
+            if (err) throw err;
+            if (rows.length === 0) {
+                console.log('No shortcode');
+            }
+            else {
+                let created_at = new Date(rows[0].created_at);
+                console.log('>> ' + rows[0].shortcode);
+                console.log('created_at: ' + created_at.toISOString());
+                console.log('static_url: ' + rows[0].static_url);
+                console.log('url: ' + rows[0].url);
+            }
         });
     });
     return;
@@ -67,6 +93,7 @@ console.log('[ ' + now.toString() + ']');
 request(get_options, function (error, response, body) {
     let search = [];
     let new_emojis = [];
+    let now = Date.now();
     for (let i = 0; i < body.length; i++) {
         search.push(select_custom_emoji(body[i].shortcode));
     }
@@ -75,7 +102,7 @@ request(get_options, function (error, response, body) {
     .then(function(rows) {
         for (let i = 0; i < rows.length; i++) {
             if (rows[i] === false) {
-                insert_custom_emoji(body[i]);
+                insert_custom_emoji(body[i], now);
                 new_emojis.push(body[i].shortcode);
             }
         }
@@ -152,14 +179,18 @@ function select_custom_emoji(shortcode) {
     });
 }
 
-function insert_custom_emoji(dataset) {
+function insert_custom_emoji(dataset, created = 0) {
+    if (created === 0) {
+        created = Date.now();
+    }
     db.serialize(function () {
         db.run(
-            'insert or ignore into custom_emoji (shortcode, static_url, url) values ($a, $b, $c)',
+            'insert or ignore into custom_emoji (shortcode, static_url, url, created_at) values ($a, $b, $c, $d)',
             {
                 $a: dataset.shortcode,
                 $b: dataset.static_url,
-                $c: dataset.url
+                $c: dataset.url,
+                $d: created
             }
         );
     });

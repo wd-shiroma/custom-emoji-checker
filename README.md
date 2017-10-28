@@ -29,3 +29,16 @@ instanceとaccess_tokenを修正すればとりあえず動きます。
 DBファイル消すだけ
 
 ```rm db/custom_emoji.db```
+
+## show database
+
+簡易的にDBの情報を表示できます。
+
+- 一覧表示
+
+```node index.js list```
+
+- 詳細表示
+
+```node index.js shortcode <shortcode>```
+
